@@ -1,0 +1,627 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <ns3:WSIBConnect xmlns:ns2="http://WSCommonTypes10.CS.ws.alfabank.ru" xmlns:ns3="http://WSIBConnect10.IO.CS.ws.alfabank.ru" xmlns:ns4="http://WSFrontToBackMessage10.IO.CS.ws.alfabank.ru">
+      <inCommonParms>
+        <userID/>
+        <branchNumber/>
+        <externalSystemCode/>
+        <externalUserCode/>
+        <ldapUser/>
+        <ldapPassword/>
+      </inCommonParms>
+      <message>
+        <header>
+          <metadata>
+            <seq>394115
+            </seq>
+            <source>FocusDMT2.0
+            </source>
+            <date>2017-11-13T03:33:41
+            </date>
+            <object_type>Trade
+            </object_type>
+            <object_id>1985222
+            </object_id>
+          </metadata>
+          <routedata>
+            <deal>SPT/FWD
+            </deal>
+            <event_state>WaitingForControl
+            </event_state>
+            <request_type>RequestForAuthorize
+            </request_type>
+            <source>FocusDMT2.0
+            </source>
+            <TradeType>Regular
+            </TradeType>
+            <branch>LE0UKB
+            </branch>
+            <event_type>Coupon Payment
+            </event_type>
+            <event>3519804
+            </event>
+            <TradeFloorType>0
+            </TradeFloorType>
+            <object>Trade
+            </object>
+          </routedata>
+        </header>
+        <body>
+          <Assetflows>
+            <AssetFlow>
+              <Id>
+                <ParameterName>Идентификатор</ParameterName>
+                <ParameterNameEng>ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>30366567</Value>
+                <ValueDisplayed>30366567</ValueDisplayed>
+                <ValueDisplayedEng>30366567</ValueDisplayedEng>
+              </Id>
+              <FlowType>
+                <ParameterName>Тип обязательства</ParameterName>
+                <ParameterNameEng>Flow Type</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>40</Value>
+                <ValueDisplayed>Coupon Payment</ValueDisplayed>
+                <ValueDisplayedEng>Coupon Payment</ValueDisplayedEng>
+              </FlowType>
+              <TradeID>
+                <ParameterName>Номер сделки</ParameterName>
+                <ParameterNameEng>Trade ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1985222</Value>
+                <ValueDisplayed>1985222</ValueDisplayed>
+                <ValueDisplayedEng>1985222</ValueDisplayedEng>
+              </TradeID>
+              <Underlying/>
+              <RegistrationDate>
+                <ParameterName>Дата регистрации</ParameterName>
+                <ParameterNameEng>Registration Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-08T00:00:00</Value>
+                <ValueDisplayed>2017-11-08T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-08T00:00:00</ValueDisplayedEng>
+              </RegistrationDate>
+              <Ctpt>
+                <ParameterName>Ctpt</ParameterName>
+                <ParameterNameEng>Ctpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>28931</Value>
+                <ValueDisplayed>АКЦИОНЕРНОЕ ОБЩЕСТВО «АЛЬФА-БАНК»</ValueDisplayed>
+                <ValueDisplayedEng>Joint Stock Company &quot;ALFA-BANK&quot;</ValueDisplayedEng>
+              </Ctpt>
+              <TargetCtpt>
+                <ParameterName>TargetCtpt</ParameterName>
+                <ParameterNameEng>TargetCtpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>39849</Value>
+                <ValueDisplayed>Alfa Capital Holdings (Cyprus) Limited</ValueDisplayed>
+                <ValueDisplayedEng>ALFA CAPITAL HOLDINGS (CYPRUS) LIMITED</ValueDisplayedEng>
+              </TargetCtpt>
+              <Book>
+                <ParameterName>Книга</ParameterName>
+                <ParameterNameEng>Book</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1701</Value>
+                <ValueDisplayed>Test_FWD</ValueDisplayed>
+                <ValueDisplayedEng>Test_FWD</ValueDisplayedEng>
+              </Book>
+              <AccountingBasket/>
+              <Currency>
+                <ParameterName>Валюта</ParameterName>
+                <ParameterNameEng>Currency</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>USD</ValueDisplayed>
+                <ValueDisplayedEng>USD</ValueDisplayedEng>
+              </Currency>
+              <Amount>
+                <ParameterName>Сумма обязательства</ParameterName>
+                <ParameterNameEng>Amount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-6931884.08</Value>
+                <ValueDisplayed>-6931884.08</ValueDisplayed>
+                <ValueDisplayedEng>-6931884.08</ValueDisplayedEng>
+              </Amount>
+              <AsseflowCleanAmount>
+                <ParameterName>Сумма без НКД или количество актива</ParameterName>
+                <ParameterNameEng>Сlean Аmount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-6931884.08</Value>
+                <ValueDisplayed>-6931884.08</ValueDisplayed>
+                <ValueDisplayedEng>-6931884.08</ValueDisplayedEng>
+              </AsseflowCleanAmount>
+              <AmountActual/>
+              <FlowDate>
+                <ParameterName>Дата обязательства</ParameterName>
+                <ParameterNameEng>Flow Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-10T00:00:00</Value>
+                <ValueDisplayed>2017-11-10T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-10T00:00:00</ValueDisplayedEng>
+              </FlowDate>
+              <IsActual>
+                <ParameterName>План/Факт</ParameterName>
+                <ParameterNameEng>Is Actual</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>0</Value>
+                <ValueDisplayed>Плановая</ValueDisplayed>
+                <ValueDisplayedEng>Плановая</ValueDisplayedEng>
+              </IsActual>
+              <AssetflowStatus>
+                <ParameterName>Статус</ParameterName>
+                <ParameterNameEng>Status</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>2</Value>
+                <ValueDisplayed>Открыта</ValueDisplayed>
+                <ValueDisplayedEng>Open</ValueDisplayedEng>
+              </AssetflowStatus>
+              <Netting/>
+              <Price/>
+              <lnkAssetflow/>
+              <PriceInCcy/>
+              <Asset>
+                <ParameterName>Базовый Актив</ParameterName>
+                <ParameterNameEng>Asset</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>83503</Value>
+                <ValueDisplayed>SLOVEN23</ValueDisplayed>
+                <ValueDisplayedEng>SLOVEN23</ValueDisplayedEng>
+              </Asset>
+              <Agreement/>
+              <MarginSystem/>
+              <Event_ID>
+                <ParameterName>Номер события</ParameterName>
+                <ParameterNameEng>Event ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>3519804</Value>
+                <ValueDisplayed>3519804</ValueDisplayed>
+                <ValueDisplayedEng>3519804</ValueDisplayedEng>
+              </Event_ID>
+              <Innetting>
+                <ParameterName>Признак неттинга</ParameterName>
+                <ParameterNameEng>Netting flag</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>1</ValueDisplayed>
+                <ValueDisplayedEng>1</ValueDisplayedEng>
+              </Innetting>
+            </AssetFlow>
+            <AssetFlow>
+              <Id>
+                <ParameterName>Идентификатор</ParameterName>
+                <ParameterNameEng>ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>30366519</Value>
+                <ValueDisplayed>30366519</ValueDisplayed>
+                <ValueDisplayedEng>30366519</ValueDisplayedEng>
+              </Id>
+              <FlowType>
+                <ParameterName>Тип обязательства</ParameterName>
+                <ParameterNameEng>Flow Type</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>704</Value>
+                <ValueDisplayed>Open Forward</ValueDisplayed>
+                <ValueDisplayedEng>Open Forward</ValueDisplayedEng>
+              </FlowType>
+              <TradeID>
+                <ParameterName>Номер сделки</ParameterName>
+                <ParameterNameEng>Trade ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1985222</Value>
+                <ValueDisplayed>1985222</ValueDisplayed>
+                <ValueDisplayedEng>1985222</ValueDisplayedEng>
+              </TradeID>
+              <Underlying>
+                <ParameterName>Инструмент</ParameterName>
+                <ParameterNameEng>Instrument</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>83503</Value>
+                <ValueDisplayed>SLOVEN23</ValueDisplayed>
+                <ValueDisplayedEng>SLOVEN23</ValueDisplayedEng>
+              </Underlying>
+              <RegistrationDate>
+                <ParameterName>Дата регистрации</ParameterName>
+                <ParameterNameEng>Registration Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-10-23T00:00:00</Value>
+                <ValueDisplayed>2017-10-23T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-10-23T00:00:00</ValueDisplayedEng>
+              </RegistrationDate>
+              <Ctpt>
+                <ParameterName>Ctpt</ParameterName>
+                <ParameterNameEng>Ctpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>28931</Value>
+                <ValueDisplayed>АКЦИОНЕРНОЕ ОБЩЕСТВО «АЛЬФА-БАНК»</ValueDisplayed>
+                <ValueDisplayedEng>Joint Stock Company &quot;ALFA-BANK&quot;</ValueDisplayedEng>
+              </Ctpt>
+              <TargetCtpt>
+                <ParameterName>TargetCtpt</ParameterName>
+                <ParameterNameEng>TargetCtpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>39849</Value>
+                <ValueDisplayed>Alfa Capital Holdings (Cyprus) Limited</ValueDisplayed>
+                <ValueDisplayedEng>ALFA CAPITAL HOLDINGS (CYPRUS) LIMITED</ValueDisplayedEng>
+              </TargetCtpt>
+              <Book>
+                <ParameterName>Книга</ParameterName>
+                <ParameterNameEng>Book</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1701</Value>
+                <ValueDisplayed>Test_FWD</ValueDisplayed>
+                <ValueDisplayedEng>Test_FWD</ValueDisplayedEng>
+              </Book>
+              <AccountingBasket/>
+              <Currency/>
+              <Amount>
+                <ParameterName>Сумма обязательства</ParameterName>
+                <ParameterNameEng>Amount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-236987490</Value>
+                <ValueDisplayed>-236987490</ValueDisplayed>
+                <ValueDisplayedEng>-236987490</ValueDisplayedEng>
+              </Amount>
+              <AsseflowCleanAmount>
+                <ParameterName>Сумма без НКД или количество актива</ParameterName>
+                <ParameterNameEng>Сlean Аmount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-236987490</Value>
+                <ValueDisplayed>-236987490</ValueDisplayed>
+                <ValueDisplayedEng>-236987490</ValueDisplayedEng>
+              </AsseflowCleanAmount>
+              <AmountActual/>
+              <FlowDate>
+                <ParameterName>Дата обязательства</ParameterName>
+                <ParameterNameEng>Flow Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-10-25T00:00:00</Value>
+                <ValueDisplayed>2017-10-25T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-10-25T00:00:00</ValueDisplayedEng>
+              </FlowDate>
+              <IsActual>
+                <ParameterName>План/Факт</ParameterName>
+                <ParameterNameEng>Is Actual</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>0</Value>
+                <ValueDisplayed>Плановая</ValueDisplayed>
+                <ValueDisplayedEng>Плановая</ValueDisplayedEng>
+              </IsActual>
+              <AssetflowStatus>
+                <ParameterName>Статус</ParameterName>
+                <ParameterNameEng>Status</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>2</Value>
+                <ValueDisplayed>Открыта</ValueDisplayed>
+                <ValueDisplayedEng>Open</ValueDisplayedEng>
+              </AssetflowStatus>
+              <Netting/>
+              <Price>
+                <ParameterName>Цена</ParameterName>
+                <ParameterNameEng>Price</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>1.1352756728099944</Value>
+                <ValueDisplayed>1.1352756728099944</ValueDisplayed>
+                <ValueDisplayedEng>1.1352756728099944</ValueDisplayedEng>
+              </Price>
+              <lnkAssetflow/>
+              <PriceInCcy>
+                <ParameterName>Валюта инструмента</ParameterName>
+                <ParameterNameEng>Pricing Currency</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>1</Value>
+                <ValueDisplayed>USD</ValueDisplayed>
+                <ValueDisplayedEng>USD</ValueDisplayedEng>
+              </PriceInCcy>
+              <Asset/>
+              <Agreement/>
+              <MarginSystem/>
+              <Event_ID/>
+              <Innetting>
+                <ParameterName>Признак неттинга</ParameterName>
+                <ParameterNameEng>Netting flag</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>1</ValueDisplayed>
+                <ValueDisplayedEng>1</ValueDisplayedEng>
+              </Innetting>
+            </AssetFlow>
+            <AssetFlow>
+              <Id>
+                <ParameterName>Идентификатор</ParameterName>
+                <ParameterNameEng>ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>30366520</Value>
+                <ValueDisplayed>30366520</ValueDisplayed>
+                <ValueDisplayedEng>30366520</ValueDisplayedEng>
+              </Id>
+              <FlowType>
+                <ParameterName>Тип обязательства</ParameterName>
+                <ParameterNameEng>Flow Type</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>743</Value>
+                <ValueDisplayed>FX Implied(dual ccy OF)</ValueDisplayed>
+                <ValueDisplayedEng>FX Implied(dual ccy OF)</ValueDisplayedEng>
+              </FlowType>
+              <TradeID>
+                <ParameterName>Номер сделки</ParameterName>
+                <ParameterNameEng>Trade ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1985222</Value>
+                <ValueDisplayed>1985222</ValueDisplayed>
+                <ValueDisplayedEng>1985222</ValueDisplayedEng>
+              </TradeID>
+              <Underlying>
+                <ParameterName>Инструмент</ParameterName>
+                <ParameterNameEng>Instrument</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>80664</Value>
+                <ValueDisplayed>USD/RUR</ValueDisplayed>
+                <ValueDisplayedEng>USD/RUR</ValueDisplayedEng>
+              </Underlying>
+              <RegistrationDate>
+                <ParameterName>Дата регистрации</ParameterName>
+                <ParameterNameEng>Registration Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-10-23T00:00:00</Value>
+                <ValueDisplayed>2017-10-23T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-10-23T00:00:00</ValueDisplayedEng>
+              </RegistrationDate>
+              <Ctpt>
+                <ParameterName>Ctpt</ParameterName>
+                <ParameterNameEng>Ctpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>28931</Value>
+                <ValueDisplayed>АКЦИОНЕРНОЕ ОБЩЕСТВО «АЛЬФА-БАНК»</ValueDisplayed>
+                <ValueDisplayedEng>Joint Stock Company &quot;ALFA-BANK&quot;</ValueDisplayedEng>
+              </Ctpt>
+              <TargetCtpt>
+                <ParameterName>TargetCtpt</ParameterName>
+                <ParameterNameEng>TargetCtpt</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>39849</Value>
+                <ValueDisplayed>Alfa Capital Holdings (Cyprus) Limited</ValueDisplayed>
+                <ValueDisplayedEng>ALFA CAPITAL HOLDINGS (CYPRUS) LIMITED</ValueDisplayedEng>
+              </TargetCtpt>
+              <Book>
+                <ParameterName>Книга</ParameterName>
+                <ParameterNameEng>Book</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1701</Value>
+                <ValueDisplayed>Test_FWD</ValueDisplayed>
+                <ValueDisplayedEng>Test_FWD</ValueDisplayedEng>
+              </Book>
+              <AccountingBasket/>
+              <Currency/>
+              <Amount>
+                <ParameterName>Сумма обязательства</ParameterName>
+                <ParameterNameEng>Amount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-269238684.492927</Value>
+                <ValueDisplayed>-269238684.492927</ValueDisplayed>
+                <ValueDisplayedEng>-269238684.492927</ValueDisplayedEng>
+              </Amount>
+              <AsseflowCleanAmount>
+                <ParameterName>Сумма без НКД или количество актива</ParameterName>
+                <ParameterNameEng>Сlean Аmount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-269238684.492927</Value>
+                <ValueDisplayed>-269238684.492927</ValueDisplayed>
+                <ValueDisplayedEng>-269238684.492927</ValueDisplayedEng>
+              </AsseflowCleanAmount>
+              <AmountActual/>
+              <FlowDate>
+                <ParameterName>Дата обязательства</ParameterName>
+                <ParameterNameEng>Flow Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-15T00:00:00</Value>
+                <ValueDisplayed>2017-11-15T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-15T00:00:00</ValueDisplayedEng>
+              </FlowDate>
+              <IsActual>
+                <ParameterName>План/Факт</ParameterName>
+                <ParameterNameEng>Is Actual</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>0</Value>
+                <ValueDisplayed>Плановая</ValueDisplayed>
+                <ValueDisplayedEng>Плановая</ValueDisplayedEng>
+              </IsActual>
+              <AssetflowStatus>
+                <ParameterName>Статус</ParameterName>
+                <ParameterNameEng>Status</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>2</Value>
+                <ValueDisplayed>Открыта</ValueDisplayed>
+                <ValueDisplayedEng>Open</ValueDisplayedEng>
+              </AssetflowStatus>
+              <Netting/>
+              <Price>
+                <ParameterName>Цена</ParameterName>
+                <ParameterNameEng>Price</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>57.48512099999987</Value>
+                <ValueDisplayed>57.48512099999987</ValueDisplayed>
+                <ValueDisplayedEng>57.48512099999987</ValueDisplayedEng>
+              </Price>
+              <lnkAssetflow/>
+              <PriceInCcy>
+                <ParameterName>Валюта инструмента</ParameterName>
+                <ParameterNameEng>Pricing Currency</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>27</Value>
+                <ValueDisplayed>RUR</ValueDisplayed>
+                <ValueDisplayedEng>RUR</ValueDisplayedEng>
+              </PriceInCcy>
+              <Asset>
+                <ParameterName>Базовый Актив</ParameterName>
+                <ParameterNameEng>Asset</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed/>
+                <ValueDisplayedEng/>
+              </Asset>
+              <Agreement/>
+              <MarginSystem/>
+              <Event_ID/>
+              <Innetting>
+                <ParameterName>Признак неттинга</ParameterName>
+                <ParameterNameEng>Netting flag</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>1</ValueDisplayed>
+                <ValueDisplayedEng>1</ValueDisplayedEng>
+              </Innetting>
+            </AssetFlow>
+          </Assetflows>
+          <PositionFlows>
+            <PositionFlow>
+              <Id>
+                <ParameterName>Идентификатор</ParameterName>
+                <ParameterNameEng>ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>123676379</Value>
+                <ValueDisplayed>123676379</ValueDisplayed>
+                <ValueDisplayedEng>123676379</ValueDisplayedEng>
+              </Id>
+              <FlowType>
+                <ParameterName>Тип обязательства</ParameterName>
+                <ParameterNameEng>Flow Type</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>706</Value>
+                <ValueDisplayed>Coupon Payment OF</ValueDisplayed>
+                <ValueDisplayedEng>Coupon Payment OF</ValueDisplayedEng>
+              </FlowType>
+              <TradeID>
+                <ParameterName>Номер сделки</ParameterName>
+                <ParameterNameEng>Trade ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1985222</Value>
+                <ValueDisplayed>1985222</ValueDisplayed>
+                <ValueDisplayedEng>1985222</ValueDisplayedEng>
+              </TradeID>
+              <Underlying>
+                <ParameterName>Актив Обязательства</ParameterName>
+                <ParameterNameEng>Underlying</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>81409</Value>
+                <ValueDisplayed>USD</ValueDisplayed>
+                <ValueDisplayedEng>USD</ValueDisplayedEng>
+              </Underlying>
+              <InstrumentType>
+                <ParameterName>Тип инструмента</ParameterName>
+                <ParameterNameEng>Instrument Type</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>8</Value>
+                <ValueDisplayed>Валюта</ValueDisplayed>
+                <ValueDisplayedEng>Ccy</ValueDisplayedEng>
+              </InstrumentType>
+              <Counterparty>
+                <ParameterName>Контрагент</ParameterName>
+                <ParameterNameEng>Counterparty</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>39849</Value>
+                <ValueDisplayed>Alfa Capital Holdings (Cyprus) Limited</ValueDisplayed>
+                <ValueDisplayedEng>ALFA CAPITAL HOLDINGS (CYPRUS) LIMITED</ValueDisplayedEng>
+              </Counterparty>
+              <Branch>
+                <ParameterName>Подразделение</ParameterName>
+                <ParameterNameEng>Branch</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>28931</Value>
+                <ValueDisplayed>АКЦИОНЕРНОЕ ОБЩЕСТВО «АЛЬФА-БАНК»</ValueDisplayed>
+                <ValueDisplayedEng>Joint Stock Company &quot;ALFA-BANK&quot;</ValueDisplayedEng>
+              </Branch>
+              <Book>
+                <ParameterName>Книга</ParameterName>
+                <ParameterNameEng>Book</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1701</Value>
+                <ValueDisplayed>Test_FWD</ValueDisplayed>
+                <ValueDisplayedEng>Test_FWD</ValueDisplayedEng>
+              </Book>
+              <AccountingBasket/>
+              <BusinessStrategy/>
+              <Amount>
+                <ParameterName>Сумма обязательства</ParameterName>
+                <ParameterNameEng>Amount</ParameterNameEng>
+                <Type>Double</Type>
+                <Value>-6931884.0825</Value>
+                <ValueDisplayed>-6931884.0825</ValueDisplayed>
+                <ValueDisplayedEng>-6931884.0825</ValueDisplayedEng>
+              </Amount>
+              <Market>
+                <ParameterName>Рынок</ParameterName>
+                <ParameterNameEng>Market</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>7</Value>
+                <ValueDisplayed>Долговые инструменты (Fixed Income)</ValueDisplayed>
+                <ValueDisplayedEng>FI</ValueDisplayedEng>
+              </Market>
+              <FlowDate>
+                <ParameterName>Дата обязательства</ParameterName>
+                <ParameterNameEng>Flow Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-10T00:00:00</Value>
+                <ValueDisplayed>2017-11-10T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-10T00:00:00</ValueDisplayedEng>
+              </FlowDate>
+              <Currency/>
+              <Price/>
+              <TransactionType>
+                <ParameterName>Тип транзакци</ParameterName>
+                <ParameterNameEng>TransactionType</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>Балансовая позиция</ValueDisplayed>
+                <ValueDisplayedEng>Cash</ValueDisplayedEng>
+              </TransactionType>
+              <Agreement/>
+              <MarginSystem/>
+              <AssetflowID/>
+              <Event_ID>
+                <ParameterName>Номер события</ParameterName>
+                <ParameterNameEng>Event ID</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>3519804</Value>
+                <ValueDisplayed>3519804</ValueDisplayed>
+                <ValueDisplayedEng>3519804</ValueDisplayedEng>
+              </Event_ID>
+              <RegistrationDate>
+                <ParameterName>Дата регистрации</ParameterName>
+                <ParameterNameEng>Registration Date</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-08T00:00:00</Value>
+                <ValueDisplayed>2017-11-08T00:00:00</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-08T00:00:00</ValueDisplayedEng>
+              </RegistrationDate>
+              <Updated>
+                <ParameterName>Дата последнего редактирования</ParameterName>
+                <ParameterNameEng>Updated</ParameterNameEng>
+                <Type>DateTime</Type>
+                <Value>2017-11-13T15:33:34</Value>
+                <ValueDisplayed>2017-11-13T15:33:34</ValueDisplayed>
+                <ValueDisplayedEng>2017-11-13T15:33:34</ValueDisplayedEng>
+              </Updated>
+              <Plitem>
+                <ParameterName>Статья дохода</ParameterName>
+                <ParameterNameEng>PLItem</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>Опер. на рынке</ValueDisplayed>
+                <ValueDisplayedEng>Trading</ValueDisplayedEng>
+              </Plitem>
+              <IsActual>
+                <ParameterName>IsActual</ParameterName>
+                <ParameterNameEng>IsActual</ParameterNameEng>
+                <Type>Integer</Type>
+                <Value>1</Value>
+                <ValueDisplayed>1</ValueDisplayed>
+                <ValueDisplayedEng>1</ValueDisplayedEng>
+              </IsActual>
+            </PositionFlow>
+          </PositionFlows>
+        </body>
+      </message>
+    </ns3:WSIBConnect>
+  </soap:Body>
+</soap:Envelope>
