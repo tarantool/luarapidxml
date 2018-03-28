@@ -1,0 +1,12 @@
+build:
+  stage: build
+  tags:
+    - docker
+  image: tarantool/tarantool:1
+
+  script:
+    - echo sha $CI_COMMIT_SHA
+    - echo tag $CI_COMMIT_TAG
+    - echo proj $CI_PROJECT_PATH
+    - tarantoolctl rocks make
+    - make -C build.luarocks/ ARGS=-VV test
