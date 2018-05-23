@@ -7,7 +7,7 @@ source  = {
 
 description = {
     summary  = "Fast XML parsing module for Tarantool";
-    homepage = 'https://gitlab.com/tarantool/watchdog',
+    homepage = 'https://gitlab.com/tarantool/ib-core/luarapidxml',
     maintainer = "Yaroslav Dynnikov <yaroslav.dynnikov@gmail.com>",
     license  = 'BSD2'
 }
