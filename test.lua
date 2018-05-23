@@ -59,12 +59,17 @@ local nestedtag_lom = {
 }
 
 local test = tap.test("luarapidxml")
-test:plan(4)
+test:plan(5)
 
 test:is_deeply(
     {pcall(decode, "")},
     {false, "decode element: not a xml element"},
     "decode empty string"
+)
+test:is_deeply(
+    decode([[<utf>&#232; - &#143;</utf>]]),
+    {tag = "utf", 'è - \xC2\x8F'},
+    "decode 'escapes'"
 )
 test:is_deeply(
     decode(nestedtag_txt),
@@ -76,6 +81,7 @@ test:is(
     nestedtag_txt,
     "encode 'nestedtag'"
 )
+
 
 local function read_file(path)
     local file = fio.open(path)

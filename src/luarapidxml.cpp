@@ -26,28 +26,58 @@ extern "C" {
 
 static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
 {
-    int n = 1;
+    int parts = 1;
     const char* end = str+len;
 
     for (const char* pos = str; pos <= end; pos++) {
         if (*pos != '&') continue;
         lua_pushlstring(L, str, pos-str);
+        uint32_t codepoint = 0;
+        int n = 0;
         if (false) ;
         else if (!strncmp(pos+1, "lt;",   3)) { lua_pushlstring(L, "<", 1);  pos += 3; }
         else if (!strncmp(pos+1, "gt;",   3)) { lua_pushlstring(L, ">", 1);  pos += 3; }
         else if (!strncmp(pos+1, "amp;",  4)) { lua_pushlstring(L, "&", 1);  pos += 4; }
         else if (!strncmp(pos+1, "apos;", 5)) { lua_pushlstring(L, "'", 1);  pos += 5; }
         else if (!strncmp(pos+1, "quot;", 5)) { lua_pushlstring(L, "\"", 1); pos += 5; }
+        else if (sscanf(pos, "&#%u;%n", &codepoint, &n) == 1) {
+            if (codepoint <= 0x7f) {
+                lua_pushfstring(L, "%c",
+                    (char) codepoint & 0x7f
+                );
+            } else if (codepoint <= 0x7ff) {
+                lua_pushfstring(L, "%c%c",
+                    (char) (0xc0 | (codepoint >> 6)),
+                    (char) (0x80 | (codepoint & 0x3f))
+                );
+            } else if (codepoint <= 0xffff) {
+                lua_pushfstring(L, "%c%c%c",
+                    (char) (0xe0 | (codepoint >> 12)),
+                    (char) (0x80 | ((codepoint >> 6) & 0x3f)),
+                    (char) (0x80 | (codepoint & 0x3f))
+                );
+            } else if (codepoint <= 0x1fffff) {
+                lua_pushfstring(L, "%c%c%c%c",
+                    (char) (0xf0 | (codepoint >> 18)),
+                    (char) (0x80 | ((codepoint >> 12) & 0x3f)),
+                    (char) (0x80 | ((codepoint >> 6) & 0x3f)),
+                    (char) (0x80 | (codepoint & 0x3f))
+                );
+            } else {
+                MARK_ERROR(msg, "xml decode", "invalid unicode codepoint");
+            }
+            pos += n-1;
+        }
         else {
             MARK_ERROR(msg, "xml decode", "invalid escape sequence");
             return -1;
         }
         str = pos+1;
-        n+=2;
+        parts+=2;
     }
 
     lua_pushlstring(L, str, end-str);
-    lua_concat(L, n);
+    lua_concat(L, parts);
     return 0;
 }
 
