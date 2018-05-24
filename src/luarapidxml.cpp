@@ -40,7 +40,8 @@ static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
         else if (!strncmp(pos+1, "amp;",  4)) { lua_pushlstring(L, "&", 1);  pos += 4; }
         else if (!strncmp(pos+1, "apos;", 5)) { lua_pushlstring(L, "'", 1);  pos += 5; }
         else if (!strncmp(pos+1, "quot;", 5)) { lua_pushlstring(L, "\"", 1); pos += 5; }
-        else if (sscanf(pos, "&#%u;%n", &codepoint, &n) == 1) {
+        else if ( (sscanf(pos+1, "#%u;%n", &codepoint, &n) == 1) ||
+                  (sscanf(pos+1, "#x%x;%n", &codepoint, &n) == 1) ) {
             if (codepoint <= 0x7f) {
                 lua_pushfstring(L, "%c",
                     (char) codepoint & 0x7f
@@ -66,7 +67,7 @@ static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
             } else {
                 MARK_ERROR(msg, "xml decode", "invalid unicode codepoint");
             }
-            pos += n-1;
+            pos += n;
         }
         else {
             MARK_ERROR(msg, "xml decode", "invalid escape sequence");

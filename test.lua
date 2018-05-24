@@ -59,17 +59,25 @@ local nestedtag_lom = {
 }
 
 local test = tap.test("luarapidxml")
-test:plan(5)
+test:plan(6)
 
 test:is_deeply(
     {pcall(decode, "")},
     {false, "decode element: not a xml element"},
     "decode empty string"
 )
+local escape_dec = "&#37; &#169; &#339; &#2063; &#23449; &#128526;"
+local escape_hex = "&#x25; &#xA9; &#x153; &#x80F; &#x5B99; &#x1F60E;"
+local escape_utf = "% © œ ࠏ 宙 😎"
 test:is_deeply(
-    decode([[<utf>&#232; - &#143;</utf>]]),
-    {tag = "utf", 'è - \xC2\x8F'},
-    "decode 'escapes'"
+    decode("<utf>"..escape_dec.."</utf>"),
+    {tag = "utf", escape_utf},
+    "decode 'dec escapes'"
+)
+test:is_deeply(
+    decode("<utf>"..escape_hex.."</utf>"),
+    {tag = "utf", escape_utf},
+    "decode 'hex escapes'"
 )
 test:is_deeply(
     decode(nestedtag_txt),
