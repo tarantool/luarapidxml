@@ -22,12 +22,16 @@ endif(APPLE)
 include_directories(src/)
 add_library(luarapidxml SHARED src/luarapidxml.cpp)
 
+if (NOT APPLE)
+  target_link_libraries(luarapidxml -static-libgcc -static-libstdc++)
+endif(NOT APPLE)
+
 # target_link_libraries(lib ${MSGPUCK_LIBRARIES})
 set_target_properties(luarapidxml PROPERTIES PREFIX "")
 
 # Install module
 install(TARGETS luarapidxml LIBRARY
-	DESTINATION ${TARANTOOL_INSTALL_LIBDIR}
+    DESTINATION ${TARANTOOL_INSTALL_LIBDIR}
 )
 
 # Testing
