@@ -1,4 +1,4 @@
-[![pipeline status](https://gitlab.com/tarantool/ib-core/luarapidxml/badges/master/pipeline.svg)](https://gitlab.com/tarantool/ib-core/luarapidxml/commits/master)
+[![Build Status](https://travis-ci.org/tarantool/luarapidxml.svg?branch=master)](https://travis-ci.org/tarantool/luarapidxml)
 
 # Fast XML parsing module for Tarantool
 
