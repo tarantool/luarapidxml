@@ -1,0 +1,10 @@
+FROM tarantool/tarantool:1
+
+
+COPY . /tarantool
+WORKDIR /tarantool
+
+RUN apk add --no-cache make cmake gcc g++
+RUN tarantoolctl rocks make
+
+CMD make -C build.luarocks/ ARGS=-VV test
