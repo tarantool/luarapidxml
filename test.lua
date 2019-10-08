@@ -113,8 +113,7 @@ local function read_file(path)
 end
 
 test:test("fixtures", function(test)
-    local fixtures_names = {"couponpayment", "exercise", "initiation", "ratechange"}
-    -- local fixtures_names = {"exercise"}
+    local fixtures_names = {"ebay", "reed", "customer"}
     test:plan(#fixtures_names)
     local dec_band_num = 0
     local dec_band_den = 0
@@ -122,7 +121,7 @@ test:test("fixtures", function(test)
     local enc_band_den = 0
     for _, name in ipairs(fixtures_names) do
 
-        local content_txt = read_file('./fixtures/trade_fwd_'..name..'.xml')
+        local content_txt = read_file('./fixtures/'..name..'.xml')
         local content_lom = decode(content_txt)
 
         test:diag("FIXTURE '"..name.."'")
@@ -136,7 +135,7 @@ test:test("fixtures", function(test)
             cnt = cnt+1
             decode(content_txt)
         until stop - start > 3
-        
+
         test:diag(string.format("decode: %.2f Req/s", cnt/(stop-start) ))
         dec_band_num = dec_band_num + (#content_txt*cnt)
         dec_band_den = dec_band_den + (stop-start)
