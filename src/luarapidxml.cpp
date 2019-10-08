@@ -66,6 +66,7 @@ static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
                 );
             } else {
                 MARK_ERROR(msg, "xml decode", "invalid unicode codepoint");
+                return -1;
             }
             pos += n;
         }
