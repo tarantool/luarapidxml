@@ -191,7 +191,9 @@ int decode( lua_State *L )
 
     if (ret < 0)
     {
-        return luaL_error(L, msg);
+        lua_pushnil(L),
+        lua_pushstring(L, msg);
+        return 2;
     }
 
     return 1;
@@ -216,7 +218,11 @@ static void encode_string(struct lua_State *L, std::ostringstream& sout, int idx
 
 }
 
-static void encode_element(struct lua_State *L, std::ostringstream& sout, int idx)
+static int encode_element(
+    struct lua_State *L,
+    std::ostringstream& sout,
+    int idx,
+    char *msg)
 {
     // soap lom object may be either a nil (it is ommited)
     // or a string, or a number (it is converted to string by lua_tolstring())
@@ -238,8 +244,9 @@ static void encode_element(struct lua_State *L, std::ostringstream& sout, int id
     // -1: lom.tag
 
     if (lua_type(L, -1) != LUA_TSTRING) {
-        luaL_error(L, "Invalid table format (`" NAME_KEY "' field must be a string)");
-        return;
+        MARK_ERROR(msg, "encode element",
+            "Invalid table format (`" NAME_KEY "' field must be a string)");
+        return -1;
     }
     size_t tag_len;
     const char *tag = lua_tolstring(L, -1, &tag_len);
@@ -263,10 +270,11 @@ static void encode_element(struct lua_State *L, std::ostringstream& sout, int id
 
             if ( lua_type(L, -1) != LUA_TSTRING || lua_type(L, -2) != LUA_TSTRING )
             {
-                luaL_error(L, "Invalid table format (`attr' table must have string keys and values)");
-                return;
+                MARK_ERROR(msg, "encode element",
+                    "Invalid table format (`attr' table must have string keys and values)");
+                return -1;
             }
-            
+
             size_t key_len;
             const char* key = lua_tolstring(L, -2, &key_len);
 
@@ -279,15 +287,16 @@ static void encode_element(struct lua_State *L, std::ostringstream& sout, int id
         }
         break;
     default:
-        luaL_error(L, "Invalid table format (`attr' field must be a table)");
-        return;
+        MARK_ERROR(msg, "encode element",
+            "Invalid table format (`attr' field must be a table)");
+        return -1;
     }
 
     if (lua_objlen(L, idx) == 0) {
         sout.put('/');
         sout.put('>');
         lua_settop(L, top);
-        return;
+        return 0;
     } else {
         sout.put('>');
     }
@@ -311,12 +320,17 @@ static void encode_element(struct lua_State *L, std::ostringstream& sout, int id
             sout.write(buf, buf_len);
             break;
         }
-        case LUA_TTABLE:
-            encode_element(L, sout, lua_gettop(L));
-            break;
+        case LUA_TTABLE: {
+            int ret = encode_element(L, sout, lua_gettop(L), msg);
+            if (ret < 0)
+                return -1;
+            else
+                break;
+        }
         default:
-            luaL_error(L, "Invalid table format (unknown content type)");
-            return;
+            MARK_ERROR(msg, "encode element",
+                "Invalid table format (unknown content type)");
+            return -1;
         }
 
         lua_pop(L, 1);
@@ -329,15 +343,22 @@ static void encode_element(struct lua_State *L, std::ostringstream& sout, int id
     sout.write(tag, tag_len);
     sout.put('>');
     lua_settop(L, top);
+    return 0;
 }
 
 int encode(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TTABLE);
     std::ostringstream oss;
+    char msg[MAX_MSG_LEN] = { 0 };
 
     for (int i=1; i<=lua_gettop(L); i++) {
-        encode_element(L, oss, i);
+        int ret = encode_element(L, oss, i, msg);
+        if (ret < 0) {
+            lua_pushnil(L);
+            lua_pushstring(L, msg);
+            return 2;
+        }
     }
 
     std::string s = oss.str();

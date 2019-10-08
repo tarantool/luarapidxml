@@ -48,24 +48,86 @@ local nestedtag_lom = {
     },
     [4] = {
         tag = "escapes",
-        {tag = "lt",   attr={ch=[[<]]}, [[<-]]},
-        {tag = "gt",   attr={ch=[[>]]}, [[->]]},
-        {tag = "amp",  attr={ch=[[&]]}, [[+&+]]},
-        {tag = "quot", attr={ch=[["]]}, [["]]},
-        {tag = "apos", attr={ch=[[']]}, [[']]},
+        {tag = "lt",   attr={ch=[[<]]}, '<-'},
+        {tag = "gt",   attr={ch=[[>]]}, '->'},
+        {tag = "amp",  attr={ch=[[&]]}, '+&+'},
+        {tag = "quot", attr={ch=[["]]}, '"'},
+        {tag = "apos", attr={ch=[[']]}, "'"},
         {tag = "mix", [['"&<>&"']]},
     },
     [5] = "your ad could be here",
 }
 
 local test = tap.test("luarapidxml")
-test:plan(6)
+test:plan(15)
+
+---------------------------------
+test:diag("Test decoding errors")
 
 test:is_deeply(
     {pcall(decode, "")},
-    {false, "decode element: not a xml element"},
+    {true, nil, "decode element: not a xml element"},
     "decode empty string"
 )
+test:is_deeply(
+    {pcall(decode, "<>")},
+    {true, nil, "invalid xml string: expected element name"},
+    "decode invalid xml string"
+)
+test:is_deeply(
+    {pcall(decode, '<x ch="&xxx;"/>')},
+    {true, nil, "xml decode: invalid escape sequence"},
+    "decode invalid escape sequence"
+)
+test:is_deeply(
+    {pcall(decode, '<x ch="&#x0x201234;"/>')},
+    {true, nil, "xml decode: invalid unicode codepoint"},
+    "decode invalid unicode codepoint"
+)
+
+---------------------------------
+test:diag("Test encoding errors")
+
+test:is_deeply(
+    {pcall(encode, {})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (`tag' field must be a string)"},
+    "encode invalid tag (nil)"
+)
+test:is_deeply(
+    {pcall(encode, {tag = 0})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (`tag' field must be a string)"},
+    "encode invalid tag (number)"
+)
+test:is_deeply(
+    {pcall(encode, {tag = 'x', attr = 'y'})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (`attr' field must be a table)"},
+    "encode invalid attr (string)"
+)
+test:is_deeply(
+    {pcall(encode, {tag = 'x', attr = {'y'}})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (`attr' table must have string keys and values)"},
+    "encode invalid attr (numeric key)"
+)
+test:is_deeply(
+    {pcall(encode, {tag = 'x', attr = {y = 0}})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (`attr' table must have string keys and values)"},
+    "encode invalid attr (numeric value)"
+)
+test:is_deeply(
+    {pcall(encode, {tag = 'x', 0ULL})},
+    {true, nil, "encode element: Invalid table format" ..
+        " (unknown content type)"},
+    "encode invalid conent (cdata)"
+)
+
+------------------------------------------
+test:diag("Test unicode escape sequences")
+
 local escape_dec = "&#37; &#169; &#339; &#2063; &#23449; &#128526;"
 local escape_hex = "&#x25; &#xA9; &#x153; &#x80F; &#x5B99; &#x1F60E;"
 local escape_utf = "% © œ ࠏ 宙 😎"
@@ -90,6 +152,8 @@ test:is(
     "encode 'nestedtag'"
 )
 
+-----------------------------------------
+test:diag("Test transcoding performance")
 
 local function read_file(path)
     local file = fio.open(path)
