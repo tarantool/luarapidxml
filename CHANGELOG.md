@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.0] - 2019-10-09
+
 - Due to exception handling specifics the module doesn't raise Lua errors
   anymore. Instead, it returns `nil, "Error description"`.
   **(incompatible change)**
