@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.1] - 2020-12-22
+
+- No noticable changes.
+- Remove unused headers for the sake of static build reliability.
+
 ## [2.0.0] - 2019-10-09
 
 - Due to exception handling specifics the module doesn't raise Lua errors
