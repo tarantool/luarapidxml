@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/tarantool/luarapidxml.svg?branch=master)](https://travis-ci.org/tarantool/luarapidxml)
+<a href="https://github.com/tarantool/luarapidxml/actions?query=workflow%3ATest">
+<img src="https://github.com/tarantool/luarapidxml/workflows/Test/badge.svg">
+</a>
 
 # Fast XML parsing module for Tarantool
 
