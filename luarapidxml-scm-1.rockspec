@@ -1,13 +1,13 @@
 package = 'luarapidxml'
 version = 'scm-1'
 source  = {
-    url    = 'git+ssh://git@gitlab.com:tarantool/ib-core/luarapidxml.git';
+    url    = 'git+https://github.com/tarantool/luarapidxml.git';
     branch = 'master';
 }
 
 description = {
     summary  = "Fast XML parsing module for Tarantool";
-    homepage = 'https://gitlab.com/tarantool/ib-core/luarapidxml',
+    homepage = 'https://github.com/tarantool/luarapidxml',
     maintainer = "Yaroslav Dynnikov <yaroslav.dynnikov@gmail.com>",
     license  = 'BSD2'
 }

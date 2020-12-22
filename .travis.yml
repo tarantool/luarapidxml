@@ -1,8 +1,0 @@
-sudo: required
-
-services:
-- docker
-
-script:
-- docker build -t test -f Dockerfile.test .
-- docker run --rm -t -i test
