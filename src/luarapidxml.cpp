@@ -1,6 +1,5 @@
 #include <cstring>
 #include <stdexcept>
-#include <sstream>
 
 #define RAPIDXML_STATIC_POOL_SIZE (32*1024)
 #define RAPIDXML_DYNAMIC_POOL_SIZE (32*1024)
@@ -12,14 +11,15 @@ extern "C" {
     int decode(lua_State *L);
     int encode(lua_State *L);
     LUA_API int luaopen_luarapidxml( lua_State *L );
-
 }
 
 #define NAME_KEY    "tag"
 #define ATTR_KEY    "attr"
 
 #define MAX_MSG_LEN 256
-#define MARK_ERROR(x,note,what) snprintf( x,MAX_MSG_LEN,"%s: %s",note,what )
+#define MARK_ERROR(x,note,what) memset(x, 0, MAX_MSG_LEN); snprintf( x,MAX_MSG_LEN,"%s: %s",note,what )
+
+static char msg[MAX_MSG_LEN];
 
 static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
 {
@@ -151,13 +151,11 @@ int decode( lua_State *L )
     const char *str = luaL_checkstring( L,1 );
 
     int ret = 0;
-    char msg[MAX_MSG_LEN] = { 0 };
-
     {
         rapidxml::xml_document<> doc;
         try
         {
-            /* nerver modify str */
+            /* never modify str */
             doc.parse<rapidxml::parse_non_destructive>(const_cast<char*>(str));
             ret = decode_element(L, doc.first_node(), msg);
         }
@@ -196,7 +194,60 @@ int decode( lua_State *L )
     return 1;
 }
 
-static void encode_string(struct lua_State *L, std::ostringstream& sout, int idx)
+struct buf {
+    char *str;
+    size_t len;
+    size_t reserved;
+};
+
+int
+buf_init(struct buf *buf)
+{
+    buf->reserved = 1024;
+    buf->len = 0;
+    buf->str = (char*)malloc(buf->reserved);
+    if (buf->str == NULL) {
+        return -1;
+    }
+    return 0;
+}
+
+int
+buf_write(struct buf *buf, const char *str, size_t len)
+{
+    size_t reserved = buf->reserved;
+    while (true) {
+        if ((buf->len + len) >= reserved)
+            reserved *= 2;
+        else
+            break;
+    }
+
+    if (buf->reserved != reserved) {
+        buf->reserved = reserved;
+        buf->str = (char*)realloc(buf->str, buf->reserved);
+        if (buf->str == NULL)
+            return -1;
+    }
+
+    memcpy(buf->str + buf->len, str, len);
+    buf->len += len;
+    return 0;
+}
+
+int
+buf_put(struct buf *buf, char c)
+{
+    return buf_write(buf, &c, 1);
+}
+
+void
+buf_destroy(struct buf *buf)
+{
+    free(buf->str);
+}
+
+static void encode_string(struct lua_State *L, struct buf *buf, int idx)
 {
     size_t len = 0;
     const char* str = lua_tolstring(L, idx, &len);
@@ -204,24 +255,23 @@ static void encode_string(struct lua_State *L, std::ostringstream& sout, int idx
 
     for (const char* pos = str; pos <= end; pos++) {
         switch (*pos) {
-        case '<':  sout.write(str, pos-str); sout.write("&lt;", 4); str = pos+1; break;
-        case '>':  sout.write(str, pos-str); sout.write("&gt;", 4); str = pos+1; break;
-        case '&':  sout.write(str, pos-str); sout.write("&amp;", 5); str = pos+1; break;
-        case '"':  sout.write(str, pos-str); sout.write("&quot;", 6); str = pos+1; break;
-        case '\'': sout.write(str, pos-str); sout.write("&apos;", 6); str = pos+1; break;
+        case '<':  buf_write(buf, str, pos-str); buf_write(buf, "&lt;", 4); str = pos+1; break;
+        case '>':  buf_write(buf, str, pos-str); buf_write(buf, "&gt;", 4); str = pos+1; break;
+        case '&':  buf_write(buf, str, pos-str); buf_write(buf, "&amp;", 5); str = pos+1; break;
+        case '"':  buf_write(buf, str, pos-str); buf_write(buf, "&quot;", 6); str = pos+1; break;
+        case '\'': buf_write(buf, str, pos-str); buf_write(buf, "&apos;", 6); str = pos+1; break;
         }
     }
-    sout.write(str, end-str);
-
+    buf_write(buf, str, end-str);
 }
 
 static int encode_element(
     struct lua_State *L,
-    std::ostringstream& sout,
+    struct buf *buf,
     int idx,
     char *msg)
 {
-    // soap lom object may be either a nil (it is ommited)
+    // soap lom object may be either a nil (it is omitted)
     // or a string, or a number (it is converted to string by lua_tolstring())
     // or a table:
     // soap_lom_object = {
@@ -247,8 +297,8 @@ static int encode_element(
     }
     size_t tag_len;
     const char *tag = lua_tolstring(L, -1, &tag_len);
-    sout.put('<');
-    sout.write(tag, tag_len);
+    buf_put(buf, '<');
+    buf_write(buf, tag, tag_len);
 
     lua_getfield(L, idx, ATTR_KEY);
     // -1: lom.attr
@@ -275,12 +325,11 @@ static int encode_element(
             size_t key_len;
             const char* key = lua_tolstring(L, -2, &key_len);
 
-            sout.put(' ');
-            sout.write(key, key_len);
-            sout.put('=');
-            sout.put('"');
-            encode_string(L, sout, lua_gettop(L));
-            sout.put('"');
+            buf_put(buf, ' ');
+            buf_write(buf, key, key_len);
+            buf_write(buf, "=\"", 2);
+            encode_string(L, buf, lua_gettop(L));
+            buf_put(buf, '"');
         }
         break;
     default:
@@ -290,12 +339,11 @@ static int encode_element(
     }
 
     if (lua_objlen(L, idx) == 0) {
-        sout.put('/');
-        sout.put('>');
+        buf_write(buf, "/>", 2);
         lua_settop(L, top);
         return 0;
     } else {
-        sout.put('>');
+        buf_put(buf, '>');
     }
 
     for (int i=1; i<=lua_objlen(L, idx); i++) {
@@ -307,18 +355,18 @@ static int encode_element(
         switch (lua_type(L, -1)) {
         case LUA_TSTRING:
         {
-            encode_string(L, sout, lua_gettop(L));
+            encode_string(L, buf, lua_gettop(L));
             break;
         }
         case LUA_TNUMBER:
         {
             size_t buf_len;
-            const char* buf = lua_tolstring(L, -1, &buf_len);
-            sout.write(buf, buf_len);
+            const char* str_buf = lua_tolstring(L, -1, &buf_len);
+            buf_write(buf, str_buf, buf_len);
             break;
         }
         case LUA_TTABLE: {
-            int ret = encode_element(L, sout, lua_gettop(L), msg);
+            int ret = encode_element(L, buf, lua_gettop(L), msg);
             if (ret < 0)
                 return -1;
             else
@@ -335,10 +383,10 @@ static int encode_element(
         // -2: tag
     }
 
-    sout.put('<');
-    sout.put('/');
-    sout.write(tag, tag_len);
-    sout.put('>');
+    buf_put(buf, '<');
+    buf_put(buf, '/');
+    buf_write(buf, tag, tag_len);
+    buf_put(buf, '>');
     lua_settop(L, top);
     return 0;
 }
@@ -346,21 +394,27 @@ static int encode_element(
 int encode(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TTABLE);
-    std::ostringstream oss;
-    char msg[MAX_MSG_LEN] = { 0 };
-
-    for (int i=1; i<=lua_gettop(L); i++) {
-        int ret = encode_element(L, oss, i, msg);
-        if (ret < 0) {
-            lua_pushnil(L);
-            lua_pushstring(L, msg);
-            return 2;
-        }
+    struct buf buf = {NULL, 0, 0};
+    if (buf_init(&buf) < 0) {
+        lua_pushnil(L);
+        lua_pushliteral(L, "Memory allocation error");
+        return 2;
     }
 
-    std::string s = oss.str();
-    lua_pushlstring(L, s.c_str(), s.length());
-    return 1;
+    int rc = 1;
+    int ret = encode_element(L, &buf, 1, msg);
+    if (ret < 0) {
+        lua_pushnil(L);
+        lua_pushstring(L, msg);
+        rc = 2;
+        goto finalize;
+   }
+
+    lua_pushlstring(L, buf.str, buf.len);
+
+finalize:
+    buf_destroy(&buf);
+    return rc;
 }
 
 /* ====================LIBRARY INITIALISATION FUNCTION======================= */
