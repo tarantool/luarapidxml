@@ -273,7 +273,7 @@ static int encode_element(
             const char* key = lua_tolstring(L, -2, &key_len);
 
             str.push_back(' ');
-            str.append( key, key_len);
+            str.append(key, key_len);
             str.append("=\"", 2);
             encode_string(L, str, lua_gettop(L));
             str.push_back('\"');
@@ -331,8 +331,7 @@ static int encode_element(
         // -2: tag
     }
 
-    str.push_back('<');
-    str.push_back('/');
+    str.append("</", 2);
     str.append(tag, tag_len);
     str.push_back('>');
     return 0;
