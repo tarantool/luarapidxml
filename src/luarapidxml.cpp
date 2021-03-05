@@ -1,6 +1,6 @@
 #include <cstring>
+#include <string>
 #include <stdexcept>
-#include <sstream>
 
 #define RAPIDXML_STATIC_POOL_SIZE (32*1024)
 #define RAPIDXML_DYNAMIC_POOL_SIZE (32*1024)
@@ -12,14 +12,15 @@ extern "C" {
     int decode(lua_State *L);
     int encode(lua_State *L);
     LUA_API int luaopen_luarapidxml( lua_State *L );
-
 }
 
 #define NAME_KEY    "tag"
 #define ATTR_KEY    "attr"
 
 #define MAX_MSG_LEN 256
-#define MARK_ERROR(x,note,what) snprintf( x,MAX_MSG_LEN,"%s: %s",note,what )
+#define MARK_ERROR(x,note,what) memset(x, 0, MAX_MSG_LEN); snprintf( x,MAX_MSG_LEN,"%s: %s",note,what )
+
+static char msg[MAX_MSG_LEN];
 
 static int decode_string(lua_State *L, const char* str, size_t len, char* msg)
 {
@@ -151,13 +152,11 @@ int decode( lua_State *L )
     const char *str = luaL_checkstring( L,1 );
 
     int ret = 0;
-    char msg[MAX_MSG_LEN] = { 0 };
-
     {
         rapidxml::xml_document<> doc;
         try
         {
-            /* nerver modify str */
+            /* never modify str */
             doc.parse<rapidxml::parse_non_destructive>(const_cast<char*>(str));
             ret = decode_element(L, doc.first_node(), msg);
         }
@@ -196,7 +195,7 @@ int decode( lua_State *L )
     return 1;
 }
 
-static void encode_string(struct lua_State *L, std::ostringstream& sout, int idx)
+static void encode_string(struct lua_State *L, std::string &res, int idx)
 {
     size_t len = 0;
     const char* str = lua_tolstring(L, idx, &len);
@@ -204,24 +203,23 @@ static void encode_string(struct lua_State *L, std::ostringstream& sout, int idx
 
     for (const char* pos = str; pos <= end; pos++) {
         switch (*pos) {
-        case '<':  sout.write(str, pos-str); sout.write("&lt;", 4); str = pos+1; break;
-        case '>':  sout.write(str, pos-str); sout.write("&gt;", 4); str = pos+1; break;
-        case '&':  sout.write(str, pos-str); sout.write("&amp;", 5); str = pos+1; break;
-        case '"':  sout.write(str, pos-str); sout.write("&quot;", 6); str = pos+1; break;
-        case '\'': sout.write(str, pos-str); sout.write("&apos;", 6); str = pos+1; break;
+        case '<':  res.append(str, pos-str); res.append("&lt;", 4); str = pos+1; break;
+        case '>':  res.append(str, pos-str); res.append("&gt;", 4); str = pos+1; break;
+        case '&':  res.append(str, pos-str); res.append("&amp;", 5); str = pos+1; break;
+        case '"':  res.append(str, pos-str); res.append("&quot;", 6); str = pos+1; break;
+        case '\'': res.append(str, pos-str); res.append("&apos;", 6); str = pos+1; break;
         }
     }
-    sout.write(str, end-str);
-
+    res.append(str, end-str);
 }
 
 static int encode_element(
     struct lua_State *L,
-    std::ostringstream& sout,
+    std::string &str,
     int idx,
     char *msg)
 {
-    // soap lom object may be either a nil (it is ommited)
+    // soap lom object may be either a nil (it is omitted)
     // or a string, or a number (it is converted to string by lua_tolstring())
     // or a table:
     // soap_lom_object = {
@@ -235,8 +233,6 @@ static int encode_element(
     // which is transformed to the string
     // [[<abc a1="A1" a2="A2">inside tag abc</abc>]]
 
-    int top = lua_gettop(L);
-
     lua_getfield(L, idx, NAME_KEY);
     // -1: lom.tag
 
@@ -247,8 +243,9 @@ static int encode_element(
     }
     size_t tag_len;
     const char *tag = lua_tolstring(L, -1, &tag_len);
-    sout.put('<');
-    sout.write(tag, tag_len);
+    str.push_back('<');
+    str.append(tag, tag_len);
+    lua_pop(L, 1);
 
     lua_getfield(L, idx, ATTR_KEY);
     // -1: lom.attr
@@ -275,12 +272,11 @@ static int encode_element(
             size_t key_len;
             const char* key = lua_tolstring(L, -2, &key_len);
 
-            sout.put(' ');
-            sout.write(key, key_len);
-            sout.put('=');
-            sout.put('"');
-            encode_string(L, sout, lua_gettop(L));
-            sout.put('"');
+            str.push_back(' ');
+            str.append(key, key_len);
+            str.append("=\"", 2);
+            encode_string(L, str, lua_gettop(L));
+            str.push_back('\"');
         }
         break;
     default:
@@ -288,17 +284,17 @@ static int encode_element(
             "Invalid table format (`attr' field must be a table)");
         return -1;
     }
+    lua_pop(L, 1);
 
-    if (lua_objlen(L, idx) == 0) {
-        sout.put('/');
-        sout.put('>');
-        lua_settop(L, top);
+    int objlen = lua_objlen(L, idx);
+    if (objlen == 0) {
+        str.append("/>");
         return 0;
     } else {
-        sout.put('>');
+        str.push_back('>');
     }
 
-    for (int i=1; i<=lua_objlen(L, idx); i++) {
+    for (int i = 1; i <= objlen; i++) {
         lua_rawgeti(L, idx, i);
         // -1: lom[i]
         // -2: lom.attr
@@ -307,18 +303,18 @@ static int encode_element(
         switch (lua_type(L, -1)) {
         case LUA_TSTRING:
         {
-            encode_string(L, sout, lua_gettop(L));
+            encode_string(L, str, lua_gettop(L));
             break;
         }
         case LUA_TNUMBER:
         {
             size_t buf_len;
-            const char* buf = lua_tolstring(L, -1, &buf_len);
-            sout.write(buf, buf_len);
+            const char *str_buf = lua_tolstring(L, -1, &buf_len);
+            str.append(str_buf, buf_len);
             break;
         }
         case LUA_TTABLE: {
-            int ret = encode_element(L, sout, lua_gettop(L), msg);
+            int ret = encode_element(L, str, lua_gettop(L), msg);
             if (ret < 0)
                 return -1;
             else
@@ -335,31 +331,27 @@ static int encode_element(
         // -2: tag
     }
 
-    sout.put('<');
-    sout.put('/');
-    sout.write(tag, tag_len);
-    sout.put('>');
-    lua_settop(L, top);
+    str.append("</", 2);
+    str.append(tag, tag_len);
+    str.push_back('>');
     return 0;
 }
+
+static std::string res;
 
 int encode(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TTABLE);
-    std::ostringstream oss;
-    char msg[MAX_MSG_LEN] = { 0 };
+    res.clear();
 
-    for (int i=1; i<=lua_gettop(L); i++) {
-        int ret = encode_element(L, oss, i, msg);
-        if (ret < 0) {
-            lua_pushnil(L);
-            lua_pushstring(L, msg);
-            return 2;
-        }
-    }
+    int ret = encode_element(L, res, 1, msg);
+    if (ret < 0) {
+        lua_pushnil(L);
+        lua_pushstring(L, msg);
+        return 2;
+   }
 
-    std::string s = oss.str();
-    lua_pushlstring(L, s.c_str(), s.length());
+    lua_pushlstring(L, res.c_str(), res.length());
     return 1;
 }
 
