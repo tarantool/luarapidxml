@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.0.2] - 2021-03-05
+
+- Improve encoding performance for about 50%.
+
 ## [2.0.1] - 2020-12-22
 
 - No noticable changes.
