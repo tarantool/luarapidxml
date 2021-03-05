@@ -1,4 +1,5 @@
 #include <cstring>
+#include <string>
 #include <stdexcept>
 
 #define RAPIDXML_STATIC_POOL_SIZE (32*1024)
@@ -194,60 +195,7 @@ int decode( lua_State *L )
     return 1;
 }
 
-struct buf {
-    char *str;
-    size_t len;
-    size_t reserved;
-};
-
-int
-buf_init(struct buf *buf)
-{
-    buf->reserved = 1024;
-    buf->len = 0;
-    buf->str = (char*)malloc(buf->reserved);
-    if (buf->str == NULL) {
-        return -1;
-    }
-    return 0;
-}
-
-int
-buf_write(struct buf *buf, const char *str, size_t len)
-{
-    size_t reserved = buf->reserved;
-    while (true) {
-        if ((buf->len + len) >= reserved)
-            reserved *= 2;
-        else
-            break;
-    }
-
-    if (buf->reserved != reserved) {
-        buf->reserved = reserved;
-        buf->str = (char*)realloc(buf->str, buf->reserved);
-        if (buf->str == NULL)
-            return -1;
-    }
-
-    memcpy(buf->str + buf->len, str, len);
-    buf->len += len;
-    return 0;
-}
-
-int
-buf_put(struct buf *buf, char c)
-{
-    return buf_write(buf, &c, 1);
-}
-
-void
-buf_destroy(struct buf *buf)
-{
-    free(buf->str);
-}
-
-static void encode_string(struct lua_State *L, struct buf *buf, int idx)
+static void encode_string(struct lua_State *L, std::string &res, int idx)
 {
     size_t len = 0;
     const char* str = lua_tolstring(L, idx, &len);
@@ -255,19 +203,19 @@ static void encode_string(struct lua_State *L, struct buf *buf, int idx)
 
     for (const char* pos = str; pos <= end; pos++) {
         switch (*pos) {
-        case '<':  buf_write(buf, str, pos-str); buf_write(buf, "&lt;", 4); str = pos+1; break;
-        case '>':  buf_write(buf, str, pos-str); buf_write(buf, "&gt;", 4); str = pos+1; break;
-        case '&':  buf_write(buf, str, pos-str); buf_write(buf, "&amp;", 5); str = pos+1; break;
-        case '"':  buf_write(buf, str, pos-str); buf_write(buf, "&quot;", 6); str = pos+1; break;
-        case '\'': buf_write(buf, str, pos-str); buf_write(buf, "&apos;", 6); str = pos+1; break;
+        case '<':  res.append(str, pos-str); res.append("&lt;", 4); str = pos+1; break;
+        case '>':  res.append(str, pos-str); res.append("&gt;", 4); str = pos+1; break;
+        case '&':  res.append(str, pos-str); res.append("&amp;", 5); str = pos+1; break;
+        case '"':  res.append(str, pos-str); res.append("&quot;", 6); str = pos+1; break;
+        case '\'': res.append(str, pos-str); res.append("&apos;", 6); str = pos+1; break;
         }
     }
-    buf_write(buf, str, end-str);
+    res.append(str, end-str);
 }
 
 static int encode_element(
     struct lua_State *L,
-    struct buf *buf,
+    std::string &str,
     int idx,
     char *msg)
 {
@@ -285,8 +233,6 @@ static int encode_element(
     // which is transformed to the string
     // [[<abc a1="A1" a2="A2">inside tag abc</abc>]]
 
-    int top = lua_gettop(L);
-
     lua_getfield(L, idx, NAME_KEY);
     // -1: lom.tag
 
@@ -297,8 +243,9 @@ static int encode_element(
     }
     size_t tag_len;
     const char *tag = lua_tolstring(L, -1, &tag_len);
-    buf_put(buf, '<');
-    buf_write(buf, tag, tag_len);
+    str.push_back('<');
+    str.append(tag, tag_len);
+    lua_pop(L, 1);
 
     lua_getfield(L, idx, ATTR_KEY);
     // -1: lom.attr
@@ -325,11 +272,11 @@ static int encode_element(
             size_t key_len;
             const char* key = lua_tolstring(L, -2, &key_len);
 
-            buf_put(buf, ' ');
-            buf_write(buf, key, key_len);
-            buf_write(buf, "=\"", 2);
-            encode_string(L, buf, lua_gettop(L));
-            buf_put(buf, '"');
+            str.push_back(' ');
+            str.append( key, key_len);
+            str.append("=\"", 2);
+            encode_string(L, str, lua_gettop(L));
+            str.push_back('\"');
         }
         break;
     default:
@@ -337,16 +284,17 @@ static int encode_element(
             "Invalid table format (`attr' field must be a table)");
         return -1;
     }
+    lua_pop(L, 1);
 
-    if (lua_objlen(L, idx) == 0) {
-        buf_write(buf, "/>", 2);
-        lua_settop(L, top);
+    int objlen = lua_objlen(L, idx);
+    if (objlen == 0) {
+        str.append("/>");
         return 0;
     } else {
-        buf_put(buf, '>');
+        str.push_back('>');
     }
 
-    for (int i=1; i<=lua_objlen(L, idx); i++) {
+    for (int i = 1; i <= objlen; i++) {
         lua_rawgeti(L, idx, i);
         // -1: lom[i]
         // -2: lom.attr
@@ -355,18 +303,18 @@ static int encode_element(
         switch (lua_type(L, -1)) {
         case LUA_TSTRING:
         {
-            encode_string(L, buf, lua_gettop(L));
+            encode_string(L, str, lua_gettop(L));
             break;
         }
         case LUA_TNUMBER:
         {
             size_t buf_len;
-            const char* str_buf = lua_tolstring(L, -1, &buf_len);
-            buf_write(buf, str_buf, buf_len);
+            const char *str_buf = lua_tolstring(L, -1, &buf_len);
+            str.append(str_buf, buf_len);
             break;
         }
         case LUA_TTABLE: {
-            int ret = encode_element(L, buf, lua_gettop(L), msg);
+            int ret = encode_element(L, str, lua_gettop(L), msg);
             if (ret < 0)
                 return -1;
             else
@@ -383,38 +331,29 @@ static int encode_element(
         // -2: tag
     }
 
-    buf_put(buf, '<');
-    buf_put(buf, '/');
-    buf_write(buf, tag, tag_len);
-    buf_put(buf, '>');
-    lua_settop(L, top);
+    str.push_back('<');
+    str.push_back('/');
+    str.append(tag, tag_len);
+    str.push_back('>');
     return 0;
 }
+
+static std::string res;
 
 int encode(lua_State *L)
 {
     luaL_checktype(L, 1, LUA_TTABLE);
-    struct buf buf = {NULL, 0, 0};
-    if (buf_init(&buf) < 0) {
-        lua_pushnil(L);
-        lua_pushliteral(L, "Memory allocation error");
-        return 2;
-    }
+    res.clear();
 
-    int rc = 1;
-    int ret = encode_element(L, &buf, 1, msg);
+    int ret = encode_element(L, res, 1, msg);
     if (ret < 0) {
         lua_pushnil(L);
         lua_pushstring(L, msg);
-        rc = 2;
-        goto finalize;
+        return 2;
    }
 
-    lua_pushlstring(L, buf.str, buf.len);
-
-finalize:
-    buf_destroy(&buf);
-    return rc;
+    lua_pushlstring(L, res.c_str(), res.length());
+    return 1;
 }
 
 /* ====================LIBRARY INITIALISATION FUNCTION======================= */
